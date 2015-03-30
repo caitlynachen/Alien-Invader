@@ -1,0 +1,153 @@
+# Alien-Invader
+package jrJava.alienInvader;
+
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
+import resources.DrawingBoard;
+import resources.SoundPlayer;
+
+public class Alien {
+
+	private static Image blue1, blue2;
+	private static Image green1, green2;
+	private static Image orange1, orange2;
+
+	protected Image image1;
+	protected Image image2;
+
+	protected int imageIndex;
+
+	protected int width;
+	protected int height;
+
+	protected static Image explosionImage;
+	protected static int widthOfExplosion, heightOfExplosion;
+	protected static SoundPlayer explosionSound;
+
+	protected int x,y; // bottom center of Alien
+	protected int xSpeed;
+	protected int ySpeed = 6;
+	protected  Color color;
+
+	protected boolean collidedWithShip;
+
+
+
+	static{
+		blue1 = new ImageIcon(Coordinator.RESOURCE_PATH + "blueAlien_1.png").getImage();
+		blue2 = new ImageIcon(Coordinator.RESOURCE_PATH + "blueAlien_2.png").getImage();
+		green1 = new ImageIcon(Coordinator.RESOURCE_PATH + "greenAlien_1.png").getImage();	
+		green2 = new ImageIcon(Coordinator.RESOURCE_PATH + "greenAlien_2.png").getImage();
+		orange1 = new ImageIcon(Coordinator.RESOURCE_PATH + "orangeAlien_1.png").getImage();
+		orange2 = new ImageIcon(Coordinator.RESOURCE_PATH + "orangeAlien_2.png").getImage();
+
+		explosionImage = new ImageIcon(Coordinator.RESOURCE_PATH + "explosion.png").getImage();
+		widthOfExplosion = explosionImage.getWidth(null);
+		heightOfExplosion= explosionImage.getHeight(null);
+
+		explosionSound = new SoundPlayer();
+		explosionSound.load(Coordinator.RESOURCE_PATH + "explosion.wav");
+	}
+
+
+	public Alien(){
+		int randomIndex  = (int) (Math.random()*3);
+
+		if(randomIndex ==0){
+			image1= blue1;
+			image2 = blue2;
+
+		}
+
+		else if(randomIndex ==1){
+			image1 = green1;
+			image2= green2;
+		}
+		else{
+			image1 = orange1;
+			image2 = orange2;
+		}
+		width = image1.getWidth(null);
+		height = image1.getHeight(null);
+
+		x = (int) (Coordinator.SCREEN_WIDTH*Math.random());
+		xSpeed= (int)((Math.random()-0.5)*20);
+	}
+
+	public int getY(){
+		return y;
+	}
+
+
+	public boolean isInside(int _x, int _y){
+
+		return _x >= x-width/2 &&  _x <= x+width/2 && _y >= y-height && _y <= y;
+
+	}
+
+
+	private void launchMissileRandomly(){
+		if(Math.random() > 0.92){
+			Missile missile = new Missile(x,y);
+			MissileManager.add(missile);
+		}
+	}
+
+	public boolean updateAndCheckCollision(Ship ship){
+
+		x= x+xSpeed;
+		y = y+ySpeed;
+
+		if(x<width/2){
+			xSpeed= -xSpeed;
+
+
+		}
+		else if(x>Coordinator.GAME_AREA_WIDTH- width/2){
+			x= Coordinator.GAME_AREA_WIDTH - width/2;
+			xSpeed= -xSpeed;
+
+		}
+
+		//check collision with ship.
+		if (ship.isInside(x,y)){
+			collidedWithShip = true;
+			explosionSound.play();
+			return true;
+		}
+
+		launchMissileRandomly();
+
+		return false;
+
+
+	}
+	public void draw(DrawingBoard board){
+		Graphics2D canvas = board.getCanvas();
+
+		if(collidedWithShip){
+			canvas.drawImage(explosionImage, x-widthOfExplosion/2, y-heightOfExplosion, board);
+			Coordinator.gameOver();
+		}
+		else {
+			imageIndex++;
+			if(imageIndex==8) imageIndex = 0;
+
+			if(imageIndex<4){
+				canvas.drawImage(image1,x-width/2, y-height, board);
+			}
+			else{
+				canvas.drawImage(image2,x-width/2, y-height, board);
+			}
+		}
+	}
+
+
+
+}
+
