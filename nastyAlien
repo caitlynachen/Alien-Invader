@@ -1,0 +1,46 @@
+package jrJava.alienInvader;
+
+public class NastyAlien extends Alien{
+
+	public boolean updateAndCheckCollision(Ship ship){
+
+		x=(int) (0.95*x+0.05*ship.getX());
+		y = y+ySpeed;
+
+		if(x<width/2){
+			xSpeed= -xSpeed;
+
+
+		}
+		else if(x>Coordinator.GAME_AREA_WIDTH- width/2){
+			x= Coordinator.GAME_AREA_WIDTH - width/2;
+			xSpeed= -xSpeed;
+
+		}
+
+		//check collision with ship.
+		if (ship.isInside(x,y)){
+			collidedWithShip = true;
+			explosionSound.play();
+			return true;
+		}
+
+		if(Math.random()>0.92 ){
+			Missile middle  = new Missile(x,y+6);
+			MissileManager.add(middle);
+
+			Missile left  = new Missile(x-10,y+6);
+			MissileManager.add(left);
+
+			Missile right  = new Missile(x+10,y+6);
+			MissileManager.add(right);
+
+		}
+
+
+
+		return false;
+
+
+	}
+}
