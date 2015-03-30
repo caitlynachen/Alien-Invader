@@ -1,0 +1,69 @@
+package jrJava.alienInvader;
+
+import java.util.ArrayList;
+
+import resources.DrawingBoard;
+
+public class MissileManager{
+
+	private static ArrayList<Missile> missiles= new ArrayList<Missile>();
+
+
+	public static int getSize(){
+		return missiles.size();
+	}
+
+
+
+	public static void add(Missile missile){
+		missiles.add(missile);
+	}
+
+	public static Missile get(int index){
+		return missiles.get(index);
+
+	}
+	public static void remove (int index){
+		missiles.remove(index);
+	}
+
+	public static void remove (Missile missile){
+		missiles.remove(missile);
+	}
+
+
+
+
+
+
+	public static void updateAndCheckCollision(Ship ship){
+
+		for(int i=0; i<missiles.size(); i++){
+			Missile each =missiles.get(i);
+			if(each.getY() > Coordinator.SCREEN_WIDTH){
+				missiles.remove(i);
+				continue;
+
+			}
+
+			each.updateAndCheckCollision(ship);
+		}
+
+	}
+
+
+	public static void draw(DrawingBoard board){
+		for(int i=0; i<missiles.size(); i++){
+			Missile each = missiles.get(i);
+			each.draw(board);
+		}
+	}
+
+
+
+
+
+
+
+
+}
