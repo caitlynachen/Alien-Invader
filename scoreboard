@@ -1,0 +1,81 @@
+package jrJava.alienInvader;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+
+import resources.DrawingBoard;
+
+public class ScoreBoard {
+
+	public static final int SCORE_BOARD_WIDTH=100;
+	public static final int DISPLAY_X = 822;
+	public static final int DISPLAY_W = 50;
+	public static final int DISPLAY_H= 200;
+	public static final int SCORE_BOARD_Y=110;
+	public static final int TORPEDO_LEVEL_Y = 400;
+	
+	private static int numOfTorpedoes=50;
+	private static int score = 200;
+	
+	private static long lastTimeTorpedoDepleted;
+	
+	public static void update(){
+		if(numOfTorpedoes ==0){
+			long timeLapse = System.currentTimeMillis()-  lastTimeTorpedoDepleted;
+			if(timeLapse >=5000){
+				numOfTorpedoes =1;
+				score = score-100;
+				 lastTimeTorpedoDepleted = Long.MAX_VALUE;
+			}
+		}
+		
+	}
+	
+	public static void draw(DrawingBoard board){
+		Graphics2D canvas = board.getCanvas();
+		canvas.setColor(Color.white);
+		canvas.fillRect(DISPLAY_X, SCORE_BOARD_Y, DISPLAY_W, DISPLAY_H);
+		canvas.setColor(Color.red);
+		int heightOfScoreBar = score/10;
+		if(heightOfScoreBar>DISPLAY_H)heightOfScoreBar=DISPLAY_H ;
+		canvas.fillRect(DISPLAY_X, SCORE_BOARD_Y+DISPLAY_H-heightOfScoreBar, DISPLAY_W, heightOfScoreBar);
+		canvas.drawString(String.valueOf(score), DISPLAY_X+5, SCORE_BOARD_Y +15);
+		
+		canvas.setColor(Color.white);
+		canvas.fillRect(DISPLAY_X, TORPEDO_LEVEL_Y, DISPLAY_W, DISPLAY_H);
+		canvas.setColor(Color.cyan);
+		int heightOfTorpedoBar = 2*numOfTorpedoes;
+		if(heightOfTorpedoBar>DISPLAY_H)heightOfScoreBar=DISPLAY_H ;
+		canvas.fillRect(DISPLAY_X, TORPEDO_LEVEL_Y+DISPLAY_H-heightOfTorpedoBar, DISPLAY_W, heightOfTorpedoBar );
+		canvas.drawString(String.valueOf(numOfTorpedoes), DISPLAY_X+5, TORPEDO_LEVEL_Y +15);
+		
+	}
+	
+	public static boolean torpedoAvailable(){
+		if(numOfTorpedoes>0) return true;
+		return false;
+		
+	}
+	
+	public static void consumeTorpedo(){
+		if(numOfTorpedoes>0){
+		
+		numOfTorpedoes = numOfTorpedoes-1;
+		if(numOfTorpedoes==0){
+			 lastTimeTorpedoDepleted = System.currentTimeMillis();
+			
+		}
+		score = score-1;
+		
+		}
+	}
+	public static void alienShotDown(){
+		score = score +10;
+		numOfTorpedoes = numOfTorpedoes +2;
+		
+	}
+	
+	public static void missileShotDown(){
+		score = score +2;
+	}
+}
