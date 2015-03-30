@@ -1,0 +1,115 @@
+package jrJava.alienInvader;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
+import resources.DrawingBoard;
+import resources.SoundPlayer;
+
+public class Torpedo {
+
+	public static Image image;
+	public static Image explosionImage;
+	public static Image smallExplosionImage;
+	public static SoundPlayer explosionSound;
+	
+	public static final int WIDTH ;
+	public static final int HEIGHT ;
+
+	private static int widthOfExplosion, heightOfExplosion;
+	private static int widthOfSmallExplosion, heightOfSmallExplosion;
+
+	private int x,y; //center, top of torpedo
+	private int ySpeed = -5;
+
+	public boolean collidedWithAlien;
+	public boolean collidedWithMissile;
+
+	static{
+		image = new ImageIcon(Coordinator.RESOURCE_PATH + "torpedo.png").getImage();
+				WIDTH = image.getWidth(null);
+				HEIGHT = image.getHeight(null);
+				
+				explosionImage = new ImageIcon(Coordinator.RESOURCE_PATH + "explosion.png").getImage();
+				widthOfExplosion = explosionImage.getWidth(null);
+				heightOfExplosion = explosionImage.getHeight(null);
+				
+				smallExplosionImage = new ImageIcon(Coordinator.RESOURCE_PATH + "explosion_small.png").getImage();
+				widthOfSmallExplosion = smallExplosionImage.getWidth(null);
+				heightOfSmallExplosion = smallExplosionImage.getHeight(null);
+				
+				explosionSound = new SoundPlayer();
+				explosionSound.load(Coordinator.RESOURCE_PATH + "explosion.wav");
+	}					
+
+	public Torpedo(int _x, int _y){
+		x= _x;
+		y= _y;
+	}
+
+	public int getY(){
+		return y;
+	}
+
+	public void draw(DrawingBoard board){
+		Graphics2D canvas = board.getCanvas();
+
+		if (collidedWithAlien){
+			canvas.drawImage(explosionImage, x-widthOfExplosion/2, y-heightOfExplosion, board);
+			TorpedoManager.remove(this);
+		}
+		
+		else if (collidedWithMissile){
+	
+			canvas.drawImage(smallExplosionImage, x-widthOfSmallExplosion, y-heightOfSmallExplosion, board);
+			TorpedoManager.remove(this);
+		}
+		
+		else {
+			canvas.drawImage(image, x-WIDTH/2, y, board);
+	}
+		
+}
+
+
+	public boolean updateAndCheckCollision(){
+
+		y = y+ySpeed;
+
+		// check collision with alien 
+		for (int i=0; i<AlienManager.getSize(); i++){
+			Alien each = AlienManager.get(i);
+			if(each.isInside(x,y)){
+				collidedWithAlien = true;
+				ScoreBoard.alienShotDown();
+				explosionSound.play();
+				AlienManager.remove(each);
+				return true;
+
+			}
+			
+		}
+
+		for (int i=0; i<MissileManager.getSize(); i++){
+		Missile each = MissileManager.get(i);
+			if(each.isInside(x,y)){
+				collidedWithMissile = true;
+				ScoreBoard.missileShotDown();
+				
+				
+				
+				
+				MissileManager.remove(each);
+				return true;
+
+			}
+		}
+
+		return false;
+
+	}
+
+}
