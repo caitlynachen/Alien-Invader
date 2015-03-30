@@ -1,0 +1,111 @@
+package jrJava.alienInvader;
+
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.*;
+
+import javax.swing.ImageIcon;
+
+import resources.*;
+
+public class Ship implements KeyListener, MouseListener, MouseMotionListener {
+
+	private Image image;
+	private SoundPlayer firingSound;
+	
+	private int x,y;  //center, top of ship
+	private int width, height;
+	private int lastX;
+	
+	public Ship(int _x, int _y){
+		x = _x;
+		y= _y;
+		
+		image = new ImageIcon(Coordinator.RESOURCE_PATH + "ship.png").getImage();
+		
+		width= image.getWidth(null); 
+		height = image.getHeight(null); 
+		
+	
+		firingSound = new SoundPlayer();
+		firingSound.load(Coordinator.RESOURCE_PATH + "laser.wav");
+	}
+	
+	public int getX(){
+		return x;
+	}
+	
+	public boolean  isInside(int _x, int _y){
+		/*
+		boolean insideTop = _x >= x-2 && _x <= x+2 && y >= y && _y <= y+15;
+		boolean insideMiddle = _x >= x-10 && _x <= x+10 && y>= y+15 && y<= y+40;
+		boolean insideBottom =  _x >= x-30 && _x <= x+30 && y>= y+40 && y<= y+60;
+		return insideTop|| insideMiddle || insideBottom;*/
+		return  ( _x >= x-2  && _x <= x+2  && _y >= y && _y <= y+15) ||
+				( _x >= x-10 && _x <= x+10 && _y>= y+15 && _y<= y+40) ||
+				( _x >= x-30 && _x <= x+30 && _y>= y+40 && _y<= y+60);
+		
+	}
+	
+	public boolean isInsideAlien(int _x,int _y){
+		return  ( _x >= x-2  && _x <= x+2  && _y >= y && _y <= y+15) ||
+				( _x >= x-10 && _x <= x+10 && _y>= y+15 && _y<= y+40) ||
+				( _x >= x-30 && _x <= x+30 && _y>= y+40 && _y<= y+60);
+	}
+
+	public void draw (DrawingBoard board){
+		Graphics2D canvas = board.getCanvas();
+		canvas.drawImage(image, x-width/2, y, board);
+}
+	public void mouseDragged(MouseEvent e) {
+		
+		int currentX = e.getX();
+		int deltaX =currentX-lastX;
+		x = x+deltaX;
+		
+		if(x<width/2){
+			x = width/2;
+			
+		}
+		else if(x>Coordinator.GAME_AREA_WIDTH-width/2){
+			x=Coordinator.GAME_AREA_WIDTH-width/2;
+		}
+		lastX = currentX;
+	}
+	public void mousePressed(MouseEvent e) {
+		
+		lastX = e.getX();
+		
+	}
+
+
+	
+	
+	public void keyPressed(KeyEvent e) {
+		//if(e.getKeyChar()==' '){
+			//System.out.println("I fired TORPEDOOO");
+		//}
+		
+		if(e.getKeyCode()==KeyEvent.VK_SPACE){
+			if(ScoreBoard.torpedoAvailable()==false) return;
+			ScoreBoard.consumeTorpedo();
+			
+			Torpedo torpedo = new Torpedo(x,y-Torpedo.HEIGHT);
+			TorpedoManager.add(torpedo);
+			firingSound.play();
+		}
+	}
+
+	public void mouseMoved(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void keyTyped(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
+
+
+
+}
