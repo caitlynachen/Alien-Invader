@@ -1,0 +1,86 @@
+package jrJava.alienInvader;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
+import resources.DrawingBoard;
+import resources.SoundPlayer;
+
+public class Missile{
+
+	private static Image image;
+	private static Image explosionImage;
+	private static int widthOfExplosion, heightOfExplosion;
+	private static SoundPlayer explosionSound;
+
+
+	public static final int WIDTH ;
+	public static final int HEIGHT;
+
+
+	private int x,y; //bottom, center of torpedo
+	private int ySpeed = 10;
+	private boolean collidedWithShip;
+
+
+	static{
+
+		image = new ImageIcon(Coordinator.RESOURCE_PATH + "missile.png").getImage();
+		WIDTH= image.getWidth(null); 
+		HEIGHT = image.getHeight(null);
+
+		explosionImage = new ImageIcon(Coordinator.RESOURCE_PATH + "explosion.png").getImage();
+		widthOfExplosion= explosionImage.getWidth(null); 
+		heightOfExplosion = explosionImage.getHeight(null); 
+
+		explosionSound = new SoundPlayer();
+		explosionSound.load(Coordinator.RESOURCE_PATH + "explosion.wav");
+
+	}
+
+	public Missile(int _x, int _y){
+
+		x = _x;
+		y= _y;
+	}
+
+	public int getY(){
+		return y;
+	}
+
+	public boolean isInside(int _x, int _y){
+
+		return _x >= x-WIDTH/2 &&  _x <= x+WIDTH/2 && _y >= y-2*HEIGHT && _y <= y;
+	}
+
+	public boolean updateAndCheckCollision (Ship ship){
+
+		y = y+ySpeed;
+
+		//Check Collision with Ship.
+
+		if (ship.isInside(x,y)){
+			collidedWithShip = true;
+			explosionSound.play();
+			return true;
+		}
+
+		return false; 
+
+	}
+	public void draw(DrawingBoard board){
+		Graphics2D canvas = board.getCanvas();
+		if(collidedWithShip){
+			canvas.drawImage(explosionImage, x-widthOfExplosion/2, y-heightOfExplosion/2, board );
+			Coordinator.gameOver();
+
+		}
+
+		else{
+			canvas.drawImage(image, x-WIDTH/2, y-HEIGHT, board);
+		}
+	}
+}
