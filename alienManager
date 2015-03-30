@@ -1,0 +1,80 @@
+package jrJava.alienInvader;
+
+import java.util.ArrayList;
+
+import resources.DrawingBoard;
+
+public class AlienManager {
+
+	private static ArrayList<Alien> aliens = new ArrayList<Alien>();
+		
+	public static int getSize(){
+		return aliens.size();
+	}
+
+	
+	public static Alien get(int index){
+		return aliens.get(index);
+		
+	}
+	
+	public static void remove (int index){
+		aliens.remove(index);
+	}
+	
+	public static void remove (Alien alien){
+		aliens.remove(alien);	
+	
+	}	
+		private static void launchAlienRandomly(){
+			
+			double rand = Math.random();
+			
+			if(rand>0.98){
+				Alien alien = new Alien();
+				aliens.add(alien);
+				
+				
+			}
+			else if(rand>0.96){
+				Alien alien = new NastyAlien();
+				aliens.add(alien);
+			}
+			else if(rand>0.94){
+				Alien alien = new CloakAlien();
+				aliens.add(alien);
+			}
+			else if(rand>0.92){
+				Alien alien = new RealNastyAlien();
+				aliens.add(alien);
+			}
+			
+			}
+	public static void updateAndCheckCollision(Ship ship){
+		
+		launchAlienRandomly();
+		
+		for(int i=0; i<aliens.size(); i++){
+		Alien each = aliens.get(i);
+		each.updateAndCheckCollision(ship);
+		
+		if(each.getY() >Coordinator.SCREEN_HEIGHT){
+			aliens.remove(i);	
+			continue;
+				
+		}
+		each.updateAndCheckCollision(ship);		
+		}
+	}
+	
+	
+	public static void draw(DrawingBoard board){
+		for(int i=0; i<aliens.size(); i++){
+		Alien each = aliens.get(i);
+		each.draw(board);
+		
+	}
+	
+	
+}
+}
