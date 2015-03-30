@@ -1,0 +1,52 @@
+package jrJava.alienInvader;
+
+import java.util.ArrayList;
+
+import resources.DrawingBoard;
+
+public class TorpedoManager {
+
+	private static ArrayList<Torpedo> torpedoes = new ArrayList<Torpedo>();
+	
+	public static void add(Torpedo torpedo){
+		torpedoes.add(torpedo);
+	}
+	
+	public static Torpedo get(int index){
+		return torpedoes.get(index);
+		
+	}
+	
+	public static void remove (int index){
+		torpedoes.remove(index);
+	}
+	
+	public static void remove (Torpedo torpedo){
+		torpedoes.remove(torpedo);
+	}
+	
+	public static void updateAndCheckCollision(){
+		
+		for(int i=0; i<torpedoes.size(); i++){
+			Torpedo each = torpedoes.get(i);
+			
+		if(each.getY()<30){
+			torpedoes.remove(i);
+			continue;
+				
+			}
+	
+			
+			each.updateAndCheckCollision();
+		}
+		}
+		
+
+	public static void draw(DrawingBoard board){
+		for(int i=0; i<torpedoes.size(); i++){
+			Torpedo each = torpedoes.get(i);
+			each.draw(board);
+			
+	}
+}
+}
