@@ -1,0 +1,79 @@
+package jrJava.alienInvader;
+
+import java.awt.Color;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
+import resources.*;
+
+public class Coordinator {
+
+	public static final String RESOURCE_PATH = "jrJava/imagesAndSounds/";
+
+	private static boolean gameOverFlag = false;
+	public static final int SCREEN_WIDTH=900;
+	public static final int SCREEN_HEIGHT = 750;
+	public static final int GAME_AREA_WIDTH = SCREEN_WIDTH- ScoreBoard.SCORE_BOARD_WIDTH;
+
+	public static void main(String[] args) {
+
+		DrawingBoard board = new DrawingBoard(SCREEN_WIDTH,SCREEN_HEIGHT); 
+		Timer timer = new Timer();
+
+		Ship ship = new Ship(300, 610);
+
+		board.getJFrame().addKeyListener(ship);
+		board.addMouseListener(ship);
+		board.addMouseMotionListener(ship);
+
+		board.setBackgroundImage(RESOURCE_PATH + "bgWithScore.png");
+		SoundPlayer bgSound = new SoundPlayer();
+		bgSound.load(RESOURCE_PATH + "bgMusic.wav");
+		bgSound.playLoop();
+
+
+
+
+
+		while(true){
+
+			if(gameOverFlag)break;
+
+
+			board.clear();
+
+			TorpedoManager.updateAndCheckCollision();
+			AlienManager.updateAndCheckCollision(ship);
+			MissileManager.updateAndCheckCollision(ship);
+			ScoreBoard.update();
+
+			TorpedoManager.draw(board);
+			AlienManager.draw(board);
+			MissileManager.draw(board);
+
+			ship.draw(board);
+			ScoreBoard.draw(board);
+
+			board.repaint();
+			timer.pause(80);
+		}
+
+		bgSound.stop();
+		Image gameOverImage = new ImageIcon(RESOURCE_PATH + "gameOver.png").getImage();
+		board.getCanvas().drawImage(gameOverImage, 150,200, board);
+		board.repaint();
+
+	}
+
+
+
+	public static void gameOver(){
+		gameOverFlag = true;
+	}
+
+
+
+}
+
+
