@@ -1,0 +1,46 @@
+package jrJava.alienInvader;
+
+import java.awt.AlphaComposite;
+import java.awt.Composite;
+import java.awt.Graphics2D;
+import resources.DrawingBoard;
+
+public class CloakAlien extends Alien{
+	
+
+	public void draw(DrawingBoard board){
+	Graphics2D canvas = board.getCanvas();
+		
+		
+		if(collidedWithShip){
+			canvas.drawImage(explosionImage, x-widthOfExplosion/2, y-heightOfExplosion, board);
+			Coordinator.gameOver();
+		}
+		else {
+			
+			Composite original = canvas.getComposite();
+			
+			float alpha = 1.0f - ((float)y-100)/(350-100);
+			if(alpha>1) alpha = 1.0f;
+			if(alpha<0) alpha = 0.0f;
+			if(y>=550) alpha = 1.0f;
+			
+			Composite c = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+			canvas.setComposite(c);
+			
+			imageIndex++;
+			if(imageIndex==8) imageIndex = 0;
+			
+			if(imageIndex<4){
+				canvas.drawImage(image1,x-width/2, y-height, board);
+			}
+			else{
+				canvas.drawImage(image2,x-width/2, y-height, board);
+			}
+			
+			
+			canvas.setComposite(original);
+}
+}
+}
+		
